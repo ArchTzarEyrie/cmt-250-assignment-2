@@ -3,32 +3,24 @@
 // -- cacheNames: an array of all cache names as strings
 async function getCacheNames() {
     console.log('[MESSAGE] Getting all cache names');
-    const cacheNames = await caches.keys();
+
     return {
         type: "CACHE_NAMES_RESPONSE",
-        cacheNames
+        cacheNames: [] // replace this
     };
 };
 
 // TASK 2
 // This function should:
-// -- delete all caches
-// -- open a cache with the name "defaultCache"
-// -- add all files under the "cached" folder to the cache
+// 1: delete all caches
+// 2: open a cache with the name "defaultCache"
+// 3: add all files under the "cached" folder to the cache
 // (namely, resource1.json, resource2.json, resource3.json)
 async function setUpCaches() {
     console.log('[CACHES] Deleting all caches');
-    const cacheNames = await caches.keys();
-    cacheNames.forEach(async cacheName => {
-        await caches.delete(cacheName);
-    });
-    const cache = await caches.open('defaultCache');
+    // implement points 1 and 2 here
     console.log("[CACHES] Adding resources to defaultCache");
-    await cache.addAll([
-        "./cached/resource1.json",
-        "./cached/deeper/resource2.json",
-        "./cached/deeper/deeper/resource3.json"
-    ]);
+    // implement point 3 here
 }
 
 // TASK 3
@@ -38,11 +30,10 @@ async function setUpCaches() {
 // -- cacheNames: an array of all cache names as strings
 async function addCache(cacheName) {
     console.log(`[MESSAGE] Opening cache with name ${cacheName}`);
-    await caches.open(cacheName);
-    const cacheNames = await caches.keys();
+
     return {
         type: "OPEN_SUCCESS",
-        cacheNames
+        cacheNames: [] // replace this 
     };
 };
 
@@ -54,30 +45,26 @@ async function addCache(cacheName) {
 // -- cacheNames: an array of all cache names as strings
 async function deleteCache(cacheName) {
     console.log(`[MESSAGE] Deleting cache with name ${cacheName}`);
-    const success = await caches.delete(cacheName);
-    const cacheNames = await caches.keys();
+
     return {
         type: "DELETE_RESPONSE",
-        success,
-        cacheNames
+        success: false, // replace this
+        cacheNames: [] // replace this
     };
 };
 
 // TASK 5
 // This function should:
-// -- search the URLs of the entries in the cache "defaultCache" for the search term
+// -- search the URLs of the keys in the cache "defaultCache" for the search term
 // -- (keep in mind the cache stores Request objects as keys, so you'll need to access the associated URL of each entry)
 // return an object with the field:
 // -- results: an array of URL strings that contain "searchTerm"
 async function searchCache(searchTerm) {
     console.log(`[MESSAGE] Searching default cache for ${searchTerm}`);
-    const cache = await caches.open('defaultCache');
-    const keys = await cache.keys();
-    const urls = keys.map(key => key.url);
-    const filteredUrls = urls.filter(url => url.includes(searchTerm));
+
     return {
         type: "SEARCH_RESULTS",
-        results: filteredUrls
+        results: [] // replace this
     };
 };
 
