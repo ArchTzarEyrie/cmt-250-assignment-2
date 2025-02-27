@@ -1,3 +1,4 @@
+// Standard initialization of service worker
 function initServiceWorker() {
     console.log('[LIFECYCLE] Initializing main file');
     navigator.serviceWorker
@@ -9,92 +10,92 @@ function initServiceWorker() {
         });
 }
 
+// Initialize our service worker on window load and
+// send a message to the SW asking for all current cache names
 window.addEventListener('load', () => {
     initServiceWorker();
+    navigator.serviceWorker.controller.postMessage({
+        type: "GET_CACHE_NAMES"
+    });
 });
 
-function addCacheHandler(cacheName) {
+// When the "Open Cache" button is clicked:
+// Post a message to our service worker to open a cache 
+// with the name supplied from the input field
+document.getElementById('add-cache-button').onclick = () => {
+    const cacheName = document.getElementById('cache-name-input').value;
     navigator.serviceWorker.controller.postMessage({
         type: "ADD_CACHE",
         cacheName
     });
 };
 
-document.getElementById('add-cache-button').onclick = () => {
+// When the "Delete Cache" button is clicked:
+// Post a message to our service worker to delete the cache
+// with the name supplied from the input field
+document.getElementById('delete-cache-button').onclick = () => {
     const cacheName = document.getElementById('cache-name-input').value;
-    addCacheHandler(cacheName);
-};
-
-function deleteCacheHandler(cacheName) {
     navigator.serviceWorker.controller.postMessage({
         type: "DELETE_CACHE",
         cacheName
     });
 };
 
-document.getElementById('delete-cache-button').onclick = () => {
-    const cacheName = document.getElementById('cache-name-input').value;
-    deleteCacheHandler(cacheName);
-};
-
-function searchHandler(searchTerm) {
+// When the "Search Cache" button is clicked:
+// Post a message to our service worker to search default cache
+// with the search time supplied from the input field
+document.getElementById('cache-search-button').onclick = () => {
+    const searchTerm = document.getElementById('cache-search-input').value;
     navigator.serviceWorker.controller.postMessage({
         type: "SEARCH_CACHE",
         searchTerm
     });
-};
-
-document.getElementById('cache-search-button').onclick = () => {
-    const searchTerm = document.getElementById('cache-search-input').value;
-    searchHandler(searchTerm);
 }
 
+// set text underneath the cache name input box with helpful information
 function setPageMessage(message) {
     document.getElementById('serviceworker-message-box').innerHTML = message;
 };
 
+// populate the first enclosed area on the page with the supplied cache names
 function setCacheNames(message) {
     document.getElementById('cache-name-area').innerHTML = message;
 };
 
-function openSuccess(cacheNames) {
-    console.log('[MESSAGE] Open cache message received');
-    setPageMessage('');
-    setCacheNames(cacheNames.join('\n'));
-};
-
-function deleteResponse(message) {
-    if (message.success) {
-        setPageMessage('');
-        setCacheNames(message.cacheNames.join('\n'));
-    } else {
-        setPageMessage('Cache deletion failed, cache not found');
-    }
-};
-
-function setSearchResults(message) {
-    document.getElementById('search-result-area').innerHTML = message;
-};
-
-function searchResults(results) {
-    setSearchResults(results.join('\n'));
-};
-
+// Message listener for our main file to receive messages from the SW
 navigator.serviceWorker.addEventListener('message', event => {
     console.log(`[MESSAGE] Main received message with type ${event.data.type}`);
     const message = event.data;
+    // This switch statement handles the different types of responses we can 
+    // receive from the SW
     switch (message.type) {
-        case "OPEN_SUCCESS":
-            openSuccess(message.cacheNames);
+        // This occurs after a cache is opened and:
+        // Resets the info message
+        // Prints all the cache names received from the SW
+        case "OPEN_SUCCESS": 
+            setPageMessage('');
+            setCacheNames(message.cacheNames.join('\n'));
             break;
+        // This occurs after a cache deletion is requested and:
+        // if the deletion was successful, we clear the info message and print the new list of cache names
+        // if the deletion failed, we set the info message to state this
         case "DELETE_RESPONSE":
-            deleteResponse(message);
+            if (message.success) {
+                setPageMessage('');
+                setCacheNames(message.cacheNames.join('\n'));
+            } else {
+                setPageMessage('Cache deletion failed, cache not found');
+            }
             break;
+        // This occurs after a cache search, and 
+        // prints the search results in the lower enclosed area
         case "SEARCH_RESULTS":
-            searchResults(message.results);
+            document.getElementById('search-result-area').innerHTML = message.results.join('\n');
             break;
+        // This occurs only on load to populate the top enclosed
+        // area for cache names with the defaultCache name
         case "CACHE_NAMES_RESPONSE":
-            setCacheNames(cacheNames.join('\n'));
+            setCacheNames(message.cacheNames.join('\n'));
             break;
         default:
             setPageMessage('ERROR: Unknown Message type received from SW');
