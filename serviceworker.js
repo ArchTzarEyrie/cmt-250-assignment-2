@@ -31,20 +31,6 @@ async function setUpCaches() {
     ]);
 }
 
-// Standard install event handler, although it calls setUpCaches to
-// standardize how our app behaves on each load
-self.addEventListener('install', async (event) => {
-    console.log('[LIFECYCLE] Service worker installed');
-    event.waitUntil(setUpCaches());
-    self.skipWaiting();
-});
-
-// Standard activate event handler
-self.addEventListener('activate', (event) => {
-    console.log('[LIFECYCLE] Service worker activated');
-    event.waitUntil(clients.claim());
-});
-
 // TASK 3
 // This function should:
 // -- open a cache with the supplied "cacheName"
@@ -95,6 +81,9 @@ async function searchCache(searchTerm) {
     };
 };
 
+
+// No tasks below this point
+
 // This function handles all messages we can expect from the main file
 // You will implement each of the called functions as part of your assignment
 // You will not need to edit this function
@@ -130,4 +119,18 @@ self.addEventListener('message', async event => {
     const response = await messageHandler(event.data);
     console.log(`[MESSAGE] Responding to main with type ${response.type}`);
     event.source.postMessage(response);
+});
+
+// Standard install event handler, although it calls setUpCaches to
+// standardize how our app behaves on each load
+self.addEventListener('install', async (event) => {
+    console.log('[LIFECYCLE] Service worker installed');
+    event.waitUntil(setUpCaches());
+    self.skipWaiting();
+});
+
+// Standard activate event handler
+self.addEventListener('activate', (event) => {
+    console.log('[LIFECYCLE] Service worker activated');
+    event.waitUntil(clients.claim());
 });
