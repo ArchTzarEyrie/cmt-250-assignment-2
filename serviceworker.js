@@ -33,7 +33,7 @@ async function setUpCaches() {
 
 // Standard install event handler, although it calls setUpCaches to
 // standardize how our app behaves on each load
-self.addEventListener('install', async () => {
+self.addEventListener('install', async (event) => {
     console.log('[LIFECYCLE] Service worker installed');
     event.waitUntil(setUpCaches());
     self.skipWaiting();
