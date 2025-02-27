@@ -24,7 +24,8 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
-async function openCache(cacheName) {
+async function addCache(cacheName) {
+    console.log(`[MESSAGE] Opening cache with name ${cacheName}`);
     await caches.open(cacheName);
     const cacheNames = await caches.keys();
     return {
@@ -34,6 +35,7 @@ async function openCache(cacheName) {
 };
 
 async function deleteCache(cacheName) {
+    console.log(`[MESSAGE] Deleting cache with name ${cacheName}`);
     const success = await caches.delete(cacheName);
     const cacheNames = await caches.keys();
     return {
@@ -44,11 +46,23 @@ async function deleteCache(cacheName) {
 };
 
 async function searchCache(searchTerm) {
+    console.log(`[MESSAGE] Searching default cache for ${searchTerm}`);
     const cache = await caches.open('defaultCache');
-    const results = await cache.matchAll(searchTerm);
+    const keys = await cache.keys();
+    const urls = keys.map(key => key.url);
+    const filteredUrls = urls.filter(url => url.includes(searchTerm));
     return {
         type: "SEARCH_RESULTS",
-        results
+        results: filteredUrls
+    };
+};
+
+async function getCacheNames() {
+    console.log('[MESSAGE] Getting all cache names');
+    const cacheNames = await caches.keys();
+    return {
+        type: "CACHE_NAMES_RESPONSE",
+        cacheNames
     };
 };
 
@@ -57,57 +71,28 @@ async function messageHandler(message) {
     let response;
     switch (type) {
         case "ADD_CACHE":
-            response = await openCache(message.cacheName);
+            response = await addCache(message.cacheName);
             return response;
         case "DELETE_CACHE":
             response = await deleteCache(message.cacheName);
             return response;
         case "SEARCH_CACHE":
-            response = await searchCache(message.searchCache);
+            response = await searchCache(message.searchTerm);
+            return response;
+        case "GET_CACHE_NAMES":
+            response = await getCacheNames();
             return response;
         default:
             return {
                 type: "ERROR",
                 message: "[ERROR] Unknown message type provided to SW"
             };
-    }
+    };
 };
 
 self.addEventListener('message', async event => {
+    console.log(`[MESSAGE] SW received message with type ${event.data.type}`);
     const response = await messageHandler(event.data);
+    console.log(`[MESSAGE] Responding to main with type ${response.type}`);
     event.source.postMessage(response);
-});
-
-async function handleFetch(event) {
-    const request = event.request;
-    console.log(`[CACHES] Request URL ${request.url}`)
-
-    const responseFromCache = await caches.match(request);
-
-    if (responseFromCache) {
-        console.log('[CACHES] Responding from cache');
-        return responseFromCache;
-    }
-
-    try {
-
-        const cache = await caches.open('defaultCache');
-        await cache.add(request.clone());
-        const responseFromNetwork = await cache.match(request);
-        console.log('[CACHES] Responding from network');
-        return responseFromNetwork;
-
-    } catch (error) {
-        
-        return new Response('Network error happened', {
-            status: 408,
-            headers: { 'Content-Type': 'text/plain' },
-        });
-    }
-}
-
-self.addEventListener('fetch', async (event) => {
-    if (event.request.url.includes('cached')) {
-        event.respondWith(handleFetch(event));
-    }
 });

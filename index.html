@@ -15,18 +15,28 @@
 
     <div class="controls" tabindex="0">
         <p>Assignment 2</p>
-        <button id="delete-cache-button" class="spaced">Delete Caches</button>
-        <br />
         <label for="cache-name-input" class="spaced">Input Cache Name:</label>
         <br />
         <input id="cache-name-input" width="200" class="spaced"/>
         <br />
         <button id="add-cache-button" class="spaced">Open Cache</button>
-        <p id="add-cache-error"></p>
+        <button id="delete-cache-button" class="spaced">Delete Cache</button>
+        <p id="serviceworker-message-box"></p>
         <br />
         <p class="spaced">Current existing caches:</p>
         <br />
         <p id="cache-name-area" class="spaced controls">Default Content</p>
+        <br />
+
+        <label for="cache-search-input" class="spaced">Input Search Term:</label>
+        <br />
+        <input id="cache-search-input" width="200" class="spaced"/>
+        <br />
+        <button id="cache-search-button" class="spaced">Search Cache</button>
+        <br />
+        <p class="spaced">Search Results:</p>
+        <br />
+        <p id="search-result-area" class="spaced controls">Default Content</p>
     </div>
 
     <script src="main.js"></script>
