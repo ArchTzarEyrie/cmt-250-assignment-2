@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>Service Workers basic example</title>
+    <title>CMT 250 Assignment 2</title>
 
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -14,15 +14,19 @@
 <body>
 
     <div class="controls" tabindex="0">
-        <p>Caching Example</p>
-        <p id="target-text">Default Load Text</p>
-        <button id="fetch-button">Fetch Response</button>
+        <p>Assignment 2</p>
+        <button id="delete-cache-button" class="spaced">Delete Caches</button>
         <br />
+        <label for="cache-name-input" class="spaced">Input Cache Name:</label>
         <br />
-        <p>Set URL Version:</p>
-        <button id="version1">1</button>
-        <button id="version2">2</button>
-        <button id="version3">3</button>
+        <input id="cache-name-input" width="200" class="spaced"/>
+        <br />
+        <button id="add-cache-button" class="spaced">Open Cache</button>
+        <p id="add-cache-error"></p>
+        <br />
+        <p class="spaced">Current existing caches:</p>
+        <br />
+        <p id="cache-name-area" class="spaced controls">Default Content</p>
     </div>
 
     <script src="main.js"></script>

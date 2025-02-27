@@ -18,3 +18,8 @@ p {
 .controls div {
     padding-bottom: 1rem;
 }
+
+.spaced {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
